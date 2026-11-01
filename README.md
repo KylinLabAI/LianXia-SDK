@@ -1,39 +1,46 @@
-# LianXia-SDK
+# LianXia SDK
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+An embeddable licensing and device-identity SDK for multi-platform apps — device fingerprinting, PoW human-verification, license evaluation (fail-closed signature checks), anonymous sessions, and upgrade management — over a uniform C ABI with thin bindings for TypeScript, Go, Swift, Kotlin (JNI), and Rust.
 
-#### 软件架构
-软件架构说明
+可嵌入多端应用的授权与设备身份 SDK：设备指纹、PoW 人机校验、许可证评估（fail-closed 签名校验）、匿名会话与升级管理，通过统一 C ABI 提供 TypeScript / Go / Swift / Kotlin (JNI) / Rust 薄绑定。
 
+## Install / 安装
 
-#### 安装教程
+Pick your language bundle from the [latest release](https://github.com/KylinLabAI/LianXia-SDK/releases/latest) (the `-any` wrapper), and let the tooling resolve the native core slice for your platform (`darwin-x64`, `darwin-arm64`, `ios-arm64`, `android-arm64`, `windows-x64`, `ohos-arm64`, `linux-x64`):
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+```bash
+# central binary store (KylinArtifacts)
+kyart pull --product lianxia --version v0.1.0 --platform ts-any
+```
 
-#### 使用说明
+Or download the bundle directly from the release page and extract it into your project's `vendor/lianxia/` — the archive layout follows the Kylin package standard (`include/`, `lib/<os>-<arch>/`, root `LICENSE` / `README.md` / `lianxia.json`).
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## Quick start / 快速开始
 
-#### 参与贡献
+```java
+// Kotlin (JNI) — full lifecycle
+try (LianXiaClient c = new LianXiaClient(
+        "https://api.example.com/api/v1",      // baseUrl (required)
+        "9b2f5c1e-0000-4000-8000-000000000001", // appId  (required)
+        null, null, null)) {                    // userToken / appSecret / publicKeyHex
+    String fp = LianXiaSdk.deriveFingerprint("macos", "SN-XXXX");
+    String view = c.licenseGetView();           // JSON in / JSON out
+}   // close() releases the native handle (idempotent)
+```
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+```typescript
+// TypeScript (koffi over the Rust C ABI)
+import { LianXiaSdk } from "lianxia-sdk";
+LianXiaSdk.version();                 // semantic version
+LianXiaSdk.powHash(token, salt, nonce);
+```
 
+See the [API reference](user_manual/API_REFERENCE.md) for the full surface: device identity (S6), PoW (S3), license (S8), session (S7), upgrade (S1), config validation (S4/S16), and the host Storage/LogSink adapters (S9).
 
-#### 特技
+## Verification / 校验
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+Every release asset's `sha256` is published with the artifact and pinned in the KylinArtifacts manifest; verify before linking.
+
+## License / 许可
+
+See [LICENSE](https://github.com/KylinLabAI/LianXia-SDK/blob/main/LICENSE).
